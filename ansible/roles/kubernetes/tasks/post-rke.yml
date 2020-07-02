@@ -1,0 +1,12 @@
+---
+- name: Copy RKE kube config back to nodes after RKE run
+  copy:
+    src: "{{ rke_directory }}/kube_config_{{ rke_cluster_name }}.yaml"
+    dest: "{{ rke_node_directory }}/kube_config_{{ rke_cluster_name }}.yaml"
+  become: true 
+
+- name: Copy RKE cluster state back to nodes after RKE run
+  copy:
+    src: "{{ rke_directory }}/{{ rke_cluster_name }}.rkestate"
+    dest: "{{ rke_node_directory }}/{{ rke_cluster_name }}.rkestate"
+  become: true

@@ -1,0 +1,77 @@
+---
+- name: Create RKE directory
+  file:
+    path: "{{ rke_directory }}"
+    state: directory
+    mode: '0774'
+  delegate_to: localhost
+  run_once: true
+
+- name: Get zerotier interface
+  raw: ls -1 /sys/class/net/ | grep zt | tr '\n' ' ' | sed 's/\ //g'
+  register: zt_interface
+  run_once: true
+  
+- set_fact:
+    kubernetes_ansible_interface: "ansible_{{zt_interface.stdout}}"
+
+- set_fact:
+    kubernetes_network_interface: "{{zt_interface.stdout}}"
+
+- name: Create RKE Configs directory
+  file:
+    path: "{{ rke_directory }}/configs"
+    state: directory
+  delegate_to: localhost
+  run_once: true
+
+- name: Install RKE
+  get_url:
+    dest: "{{ rke_directory }}/rke"
+    url: https://github.com/rancher/rke/releases/download/v{{ rke_version }}/rke_linux-amd64
+  delegate_to: localhost
+  run_once: true
+
+- name: Make RKE executable
+  file:
+    dest: "{{ rke_directory }}/rke"
+    mode: +x
+  delegate_to: localhost
+  run_once: true
+
+- name: Put RKE cluster config in place
+  template:
+    src: ../templates/rke-cluster-deployment.yaml
+    dest: "{{ rke_directory }}/{{ rke_cluster_name }}.yaml"
+  delegate_to: localhost
+  run_once: true
+
+# - name: Put RKE configs in place
+#   template:
+#     src: ../templates/rke-configs/{{ item }}.j2
+#     dest: "{{ rke_directory }}/configs/{{ item }}"
+#   with_items:
+#     - kube-state-metrics-deployment.yaml
+#     - kube-state-metrics-service.yaml
+#     - kube-state-metrics-rbac.yaml
+#   delegate_to: localhost
+#   run_once: true
+
+- name: Run RKE
+  shell: >
+    bash -c "{{ rke_directory }}/rke up --config {{ rke_directory }}/{{ rke_cluster_name }}.yaml"
+  delegate_to: localhost
+  run_once: true
+  retries: 5
+  delay: 5
+  register: rke_install
+  until: rke_install.rc == 0
+
+- name: Set permissions on rke directory
+  file:
+    path: "{{ rke_directory }}"
+    state: directory
+    mode: '0774'
+    recurse: yes
+  delegate_to: localhost
+  run_once: true

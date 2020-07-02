@@ -1,11 +1,33 @@
 ---
-- name: All hosts ansible dependencies
+- name: Wait for ssh and cloud-init
   hosts: "masters,workers"
-  user: root
+  user: debian
   gather_facts: false
   serial: 100%
   vars:
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
   tasks:
-    - name: Update apt
-      raw: apt-get update
+  - name: Wait 600 seconds for target connection to become reachable/usable
+    wait_for_connection:
+      timeout: 600
+
+  - name: Wait for cloud init to finish
+    cloud_init_data_facts:
+      filter: status
+    register: res
+    until: "res.cloud_init_data_facts.status.v1.stage is defined and not res.cloud_init_data_facts.status.v1.stage"
+    retries: 20
+    delay: 60
+
+- name: Install kubernetes with rke
+  hosts: "masters,workers"
+  user: debian
+  gather_facts: true
+  serial: 100%
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+  roles:
+    - role: ../roles/kubernetes
+      vars:
+        longhorn_enabled: true
+        standard_user: debian

@@ -23,11 +23,18 @@ resource "openstack_compute_secgroup_v2" "multicloud_home" {
     ip_protocol = "tcp"
     cidr        = "0.0.0.0/0"
   }
+
+  rule {
+    from_port   = 6443
+    to_port     = 6443
+    ip_protocol = "tcp"
+    cidr        = "0.0.0.0/0"
+  }
 }
 
 data "openstack_images_image_v2" "ubuntu" {
   provider = openstack.home
-  name        = "xenial-image"
+  name        = "debian-10-image"
   most_recent = true
 }
 
@@ -37,7 +44,7 @@ resource "openstack_compute_instance_v2" "home-master" {
   flavor_name = "g1.medium"
   key_pair = "multicloud"
   security_groups = [openstack_compute_secgroup_v2.multicloud_home.name]
-  image_name = "xenial-image"
+  image_name = "debian-10-image"
   user_data = data.template_file.user-data.rendered
   network {
     name = "GATEWAY_NET"
@@ -49,10 +56,11 @@ resource "openstack_compute_instance_v2" "home-master" {
   block_device {
     uuid                  = data.openstack_images_image_v2.ubuntu.id
     source_type           = "image"
-    volume_size           = 20
+    volume_size           = 50
+    volume_type           = "standard"
     boot_index            = 0
     destination_type      = "volume"
-    delete_on_termination = false
+    delete_on_termination = true
   }
   count = 1
 }
@@ -74,10 +82,10 @@ resource "openstack_compute_instance_v2" "home-worker" {
   block_device {
     uuid                  = data.openstack_images_image_v2.ubuntu.id
     source_type           = "image"
-    volume_size           = 20
+    volume_size           = 50
     boot_index            = 0
     destination_type      = "volume"
-    delete_on_termination = false
+    delete_on_termination = true
   }
   count = 1
 }

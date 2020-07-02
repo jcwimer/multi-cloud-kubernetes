@@ -1,0 +1,49 @@
+---
+
+ssh_key_path: {{ rke_ssh_key_location }}
+
+cluster_name: {{ rke_cluster_name }}
+ignore_docker_version: true
+system_images:
+    kubernetes: rancher/hyperkube:v{{ kubernetes_version }}-rancher1
+
+{% if (longhorn_enabled is defined and longhorn_enabled | bool == True) %}
+services:
+  kubelet:
+    extra_args:
+      volume-plugin-dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
+    extra_binds:
+      - /usr/libexec/kubernetes/kubelet-plugins/volume/exec:/usr/libexec/kubernetes/kubelet-plugins/volume/exec
+{% endif %}
+
+network:
+    plugin: canal
+    {% if (kubernetes_network_interface is defined) %}
+
+    options:
+        canal_iface: {{ kubernetes_network_interface }}
+    {% endif %}
+
+nodes:
+  {% for node in groups['masters'] %}
+
+  - address: {{node}}
+    name: {{hostvars[node]['ansible_hostname']}}
+    hostname_override: {{hostvars[node]['ansible_hostname']}}
+    internal_address: {{ hostvars[node][kubernetes_ansible_interface]['ipv4']['address'] }}
+    user: {{standard_user}}
+    role:
+    - controlplane
+    - etcd
+  {% endfor %}
+  {% for node in groups['workers'] %}
+
+  - address: {{node}}
+    internal_address: {{ hostvars[node][kubernetes_ansible_interface]['ipv4']['address'] }}
+    name: {{hostvars[node]['ansible_hostname']}}
+    hostname_override: {{hostvars[node]['ansible_hostname']}}
+    user: {{standard_user}}
+    role:
+    - worker
+
+  {% endfor %}

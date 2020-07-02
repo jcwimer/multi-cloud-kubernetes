@@ -23,6 +23,13 @@ resource "openstack_compute_secgroup_v2" "multicloud_ramnode" {
     ip_protocol = "tcp"
     cidr        = "0.0.0.0/0"
   }
+
+  rule {
+    from_port   = 6443
+    to_port     = 6443
+    ip_protocol = "tcp"
+    cidr        = "0.0.0.0/0"
+  }
 }
 
 resource "openstack_compute_instance_v2" "ramnode-master" {
@@ -31,7 +38,7 @@ resource "openstack_compute_instance_v2" "ramnode-master" {
   flavor_name = "2GB SKVM"
   key_pair = "multicloud"
   security_groups = [openstack_compute_secgroup_v2.multicloud_ramnode.name]
-  image_name = "Ubuntu 20.04 Server Cloud"
+  image_name = "Debian 10 Cloud"
   user_data = data.template_file.user-data.rendered
   network {
     name = "Public"
@@ -49,7 +56,7 @@ resource "openstack_compute_instance_v2" "ramnode-worker" {
   flavor_name = "2GB SKVM"
   key_pair = "multicloud"
   security_groups = [openstack_compute_secgroup_v2.multicloud_ramnode.name]
-  image_name = "Ubuntu 20.04 Server Cloud"
+  image_name = "Debian 10 Cloud"
   user_data = data.template_file.user-data.rendered
   network {
     name = "Public"

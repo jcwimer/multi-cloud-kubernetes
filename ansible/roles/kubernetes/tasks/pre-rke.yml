@@ -1,0 +1,98 @@
+---
+- name: Update apt
+  apt: update_cache=yes
+  become: true
+
+- name: Install programs to add debian repositories
+  apt: name={{ item }}  state=present force=yes
+  with_items:
+    - curl
+    - apt-transport-https
+  become: true
+
+- name: Add kubernetes key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    state: present
+  become: true
+
+- name: Add kubernetes repo
+  apt_repository:
+    repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+  become: true
+
+- name: Update apt
+  apt: update_cache=yes
+  become: true
+
+- name: Install kubectl
+  apt: name={{ item }}  state=present force=yes
+  with_items:
+    - kubectl
+  become: true
+
+- name: Creates RKE directory on nodes
+  file:
+    path: "{{ rke_node_directory }}"
+    state: directory
+    mode: '0774'
+  become: true 
+
+- name: Create flex volume folder
+  file: 
+    path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
+    state: directory
+  become: true
+
+- name: Create Rook storage Directory
+  file:
+    path: /var/lib/rook
+    state: directory
+    mode: '0774'
+  become: true
+  when: rook_enabled is defined and rook_enabled | bool == True
+
+- name: Create Longhorn Storage Directory
+  file:
+    path: /var/lib/rancher/longhorn
+    state: directory
+    mode: '0774'
+  become: true
+  when: longhorn_enabled is defined and longhorn_enabled | bool == True
+
+- name: Create Longhorn Setting Directory
+  file:
+    path: /var/lib/longhorn-setting
+    state: directory
+    mode: '0774'
+  become: true
+  when: longhorn_enabled is defined and longhorn_enabled | bool == True
+
+- name: Check if RKE cluster state file exists
+  stat:
+    path: "{{ rke_node_directory }}/{{ rke_cluster_name }}.rkestate"
+  register: cluster_state_result
+  become: true 
+
+- name: Check if RKE kubeconfig file exists
+  stat:
+    path: "{{ rke_node_directory }}/kube_config_{{ rke_cluster_name }}.yaml"
+  register: kube_config_result
+  become: true 
+
+- name: Copy RKE cluster state back to local if it already exists 
+  fetch: 
+    src: "{{ rke_node_directory }}/{{ rke_cluster_name }}.rkestate"
+    dest: "{{ rke_directory }}/{{ rke_cluster_name }}.rkestate"
+    flat: yes
+  when: cluster_state_result.stat.exists == True 
+  become: true 
+
+- name: Copy RKE kube config if it already exists
+  fetch: 
+    src: "{{ rke_node_directory }}/kube_config_{{ rke_cluster_name }}.yaml"
+    dest: "{{ rke_directory }}/kube_config_{{ rke_cluster_name }}.yaml"
+    flat: yes
+  when: kube_config_result.stat.exists == True 
+  become: true

@@ -18,7 +18,6 @@ ${project_dir}/terraform apply -auto-approve -refresh=true \
   -var "ramnode_username=${RAMNODE_USERNAME}" \
   -var "ramnode_password=${RAMNODE_PASSWORD}" \
   -var "do_token=${DIGITALOCEAN_ACCESS_TOKEN}"
-sleep 60s
 cd ${project_dir}/ansible
 pipenv sync
 pipenv run bash run-ansible.sh

@@ -1,0 +1,9 @@
+---
+- name: RKE Pre Tasks
+  import_tasks: pre-rke.yml
+
+- name: RKE Deploy Kubernetes
+  import_tasks: deploy-rke.yml
+
+- name: RKE Post Tasks
+  import_tasks: post-rke.yml

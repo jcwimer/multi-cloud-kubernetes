@@ -1,0 +1,6 @@
+---
+rke_directory: /home/{{ standard_user }}/rke
+rke_node_directory: /opt/rke
+rke_version: 1.1.3
+rke_cluster_name: rke-k8s
+kubernetes_version: 1.15.12

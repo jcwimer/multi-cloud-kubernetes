@@ -13,7 +13,7 @@ resource "digitalocean_tag" "worker" {
 
 resource "digitalocean_droplet" "master" {
 	provider = digitalocean.digitalocean
-	image = "ubuntu-20-04-x64"
+	image = "debian-10-x64"
 	name = "multicloud-digitalocean-master"
 	region = "nyc1"
 	size = "s-1vcpu-2gb"
@@ -25,7 +25,7 @@ resource "digitalocean_droplet" "master" {
 
 resource "digitalocean_droplet" "worker" {
 	provider = digitalocean.digitalocean
-	image = "ubuntu-20-04-x64"
+	image = "debian-10-x64"
 	name = "multicloud-digitalocean-worker"
 	region = "nyc1"
 	size = "s-1vcpu-2gb"
