@@ -1,0 +1,11 @@
+---
+- name: All hosts ansible dependencies
+  hosts: "masters,workers"
+  user: root
+  gather_facts: false
+  serial: 100%
+  vars:
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+  tasks:
+    - name: Update apt
+      raw: apt-get update

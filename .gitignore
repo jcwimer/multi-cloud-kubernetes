@@ -1,0 +1,6 @@
+terraform-code/terraform.tfstate*
+terraform-code/inventory
+terraform-code/.terraform
+terraform
+prod.env
+ansible/playbooks/*.retry
