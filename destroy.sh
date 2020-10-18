@@ -11,4 +11,4 @@ ${project_dir}/terraform destroy -force \
   -var "ramnode_password=${RAMNODE_PASSWORD}" \
   -var "do_token=${DIGITALOCEAN_ACCESS_TOKEN}"
 
-rm -rf ${project_dir}/rke
+rm -rf ${project_dir}/rke/*

@@ -60,7 +60,7 @@ metadata:
     kubernetes.io/tls-acme: "true"
 spec:
   rules:
-  - host: test.codywimer.com
+  - host: helloworld.test.codywimer.com
     http:
       paths:
       - path: /
@@ -69,5 +69,5 @@ spec:
           servicePort: 80
   tls:
     - hosts:
-      - test.codywimer.com
+      - helloworld.test.codywimer.com
       secretName: letsencrypt-prod-test

@@ -27,7 +27,7 @@ spec:
         - name: ZONE_NAME
           value: "codywimer.com"
         - name: RECORD_TO_MODIFY
-          value: "test"
+          value: "*.test"
         resources:
           limits:
             cpu: "0.1"

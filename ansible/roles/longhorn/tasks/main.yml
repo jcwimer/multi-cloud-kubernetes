@@ -1,0 +1,52 @@
+---
+- name: Create Longhorn config Directory
+  file:
+    path: "{{ rke_directory }}/longhorn"
+    state: directory
+  delegate_to: localhost
+  run_once: true
+
+- name: Get Longhorn Install
+  get_url:
+    url: https://raw.githubusercontent.com/longhorn/longhorn/{{ longhorn_version }}/deploy/longhorn.yaml
+    dest: "{{ rke_directory }}/longhorn/longhorn.yaml"
+  delegate_to: localhost
+  run_once: true
+
+- name: Put other Longhorn yaml in place
+  template:
+    src: ../templates/{{ item }}
+    dest: "{{ rke_directory }}/longhorn/{{ item }}"
+  with_items:
+    - longhorn-ingress.yaml
+  delegate_to: localhost
+  run_once: true
+
+- name: Install Longhorn
+  command: kubectl apply -f {{ rke_directory }}/longhorn/longhorn.yaml
+  environment:
+    KUBECONFIG: "{{ rke_directory }}/kube_config_rke-k8s.yaml"
+  delegate_to: localhost
+  run_once: true
+
+- name: Create Longhorn Ingress basic auth secret
+  command: kubectl -n longhorn-system create secret generic basic-auth --from-file={{ rke_directory }}/auth
+  environment:
+    KUBECONFIG: "{{ rke_directory }}/kube_config_rke-k8s.yaml"
+  delegate_to: localhost
+  run_once: true
+
+- name: Install Longhorn Extras
+  command: kubectl apply -f {{ rke_directory }}/longhorn/
+  environment:
+    KUBECONFIG: "{{ rke_directory }}/kube_config_rke-k8s.yaml"
+  delegate_to: localhost
+  run_once: true
+
+- name: Set default storageclass
+  command: >
+    kubectl patch storageclass longhorn -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+  environment:
+    KUBECONFIG: "{{ rke_directory }}/kube_config_rke-k8s.yaml"
+  delegate_to: localhost
+  run_once: true

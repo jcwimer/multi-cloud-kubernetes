@@ -31,3 +31,7 @@
       vars:
         longhorn_enabled: true
         standard_user: debian
+    - role: ../roles/longhorn
+      vars:
+        longhorn_enabled: true
+        standard_user: debian
