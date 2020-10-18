@@ -46,16 +46,17 @@
   delegate_to: localhost
   run_once: true
 
-# - name: Put RKE configs in place
-#   template:
-#     src: ../templates/rke-configs/{{ item }}.j2
-#     dest: "{{ rke_directory }}/configs/{{ item }}"
-#   with_items:
-#     - kube-state-metrics-deployment.yaml
-#     - kube-state-metrics-service.yaml
-#     - kube-state-metrics-rbac.yaml
-#   delegate_to: localhost
-#   run_once: true
+- name: Put RKE configs in place
+  template:
+    src: ../templates/{{ item }}
+    dest: "{{ rke_directory }}/configs/{{ item }}"
+  with_items:
+    - cloudflare-updater.yaml
+    - test-app.yaml
+    - cert-manager-namespace.yaml
+    - cert-manager-prod-issuer.yaml
+  delegate_to: localhost
+  run_once: true
 
 - name: Run RKE
   shell: >

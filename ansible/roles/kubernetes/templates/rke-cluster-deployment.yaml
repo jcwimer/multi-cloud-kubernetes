@@ -15,13 +15,15 @@ services:
     extra_binds:
       - /usr/libexec/kubernetes/kubelet-plugins/volume/exec:/usr/libexec/kubernetes/kubelet-plugins/volume/exec
 {% endif %}
+  kube_api:
+    service_cluster_ip_range: 192.168.0.0/16
 
 network:
-    plugin: canal
+    plugin: flannel
     {% if (kubernetes_network_interface is defined) %}
 
     options:
-        canal_iface: {{ kubernetes_network_interface }}
+        flannel_iface: {{ kubernetes_network_interface }}
     {% endif %}
 
 nodes:
@@ -35,6 +37,7 @@ nodes:
     role:
     - controlplane
     - etcd
+
   {% endfor %}
   {% for node in groups['workers'] %}
 
@@ -47,3 +50,16 @@ nodes:
     - worker
 
   {% endfor %}
+
+dns:
+    provider: coredns
+    upstreamnameservers:
+    - 1.1.1.1
+    - 8.8.4.4
+
+addons_include:
+  - {{ rke_directory }}/cert-manager-namespace.yaml
+  - {{ rke_directory }}/configs/cloudflare-updater.yaml
+  - {{ rke_directory }}/configs/test-app.yaml
+  - https://github.com/jetstack/cert-manager/releases/download/v0.13.1/cert-manager.yaml
+  - {{ rke_directory }}/cert-manager-prod-issuer.yaml

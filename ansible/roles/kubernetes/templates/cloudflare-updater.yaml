@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflare-updater
+  labels:
+    app: cloudflare-updater
+spec:
+  strategy:
+    type: Recreate
+  selector:
+     matchLabels:
+       app: cloudflare-updater
+  template:
+    metadata:
+      labels:
+        app: cloudflare-updater
+    spec:
+      containers:
+      - image: jcwimer/cloudflare-updater
+        name: cloudflare-updater
+        env:
+        - name: CLOUDFLARE_API
+          value: "{{cloudflare_api}}"
+        - name: PROXIED
+          value: "false"
+        - name: ZONE_NAME
+          value: "codywimer.com"
+        - name: RECORD_TO_MODIFY
+          value: "test"
+        resources:
+          limits:
+            cpu: "0.1"
+            memory: "50Mi"
+          requests:
+            memory: "50Mi"
+            cpu: "0.1"
