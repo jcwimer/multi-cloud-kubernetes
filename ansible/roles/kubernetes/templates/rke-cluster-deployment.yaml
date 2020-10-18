@@ -60,6 +60,6 @@ dns:
 addons_include:
   - {{ rke_directory }}/cert-manager-namespace.yaml
   - {{ rke_directory }}/configs/cloudflare-updater.yaml
-  - {{ rke_directory }}/configs/test-app.yaml
   - https://github.com/jetstack/cert-manager/releases/download/v0.13.1/cert-manager.yaml
+  - {{ rke_directory }}/configs/test-app.yaml
   - {{ rke_directory }}/cert-manager-prod-issuer.yaml
