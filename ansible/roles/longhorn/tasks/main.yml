@@ -35,6 +35,7 @@
     KUBECONFIG: "{{ rke_directory }}/kube_config_rke-k8s.yaml"
   delegate_to: localhost
   run_once: true
+  ignore_errors: yes
 
 - name: Install Longhorn Extras
   command: kubectl apply -f {{ rke_directory }}/longhorn/
