@@ -4,14 +4,14 @@ This is example code for how I deploy a cross cloud Kubernetes cluster to my hom
 # Run
 ### Set ENVS on test.env
 1. DIGITALOCEAN_ACCESS_TOKEN - api token to interact with Digital Ocean. Used by `terraform-code/digitalocean.tf`
-RAMNODE_USERNAME - ramnode openstack username. Used by `terraform-code/ramnode.tf`
-RAMNODE_PASSWORD - ramnode openstack password. Used by `terraform-code/ramnode.tf`
-HOME_USERNAME - home openstack username. Used by `terraform-code/home.tf`
-HOME_PASSWORD - home openstack password. Used by `terraform-code/home.tf`
-ZEROTIER_NETWORK - zerotier network id. Used by `terraform-code/user-data.sh`
-CLOUDFLARE_API - cloudflare api token. Used by `ansible/roles/kubernetes/templates/cloudflare-updater.yaml` to be passed to the cloudflare updater pod.
-LONGHORN_USERNAME - any username you want to use for basic auth http for longhorn. Used by `ansible/roles/longhorn/templates/longhorn-ingress.yaml`. Basic auth created by `bin/longhorn-basic-auth.sh`
-LONGHORN_PASSWORD - any password you want to use for basic auth http for longhorn. Used by `ansible/roles/longhorn/templates/longhorn-ingress.yaml`. Basic auth created by `bin/longhorn-basic-auth.sh`
+2. RAMNODE_USERNAME - ramnode openstack username. Used by `terraform-code/ramnode.tf`
+3. RAMNODE_PASSWORD - ramnode openstack password. Used by `terraform-code/ramnode.tf`
+4. HOME_USERNAME - home openstack username. Used by `terraform-code/home.tf`
+5. HOME_PASSWORD - home openstack password. Used by `terraform-code/home.tf`
+6. ZEROTIER_NETWORK - zerotier network id. Used by `terraform-code/user-data.sh`
+7. CLOUDFLARE_API - cloudflare api token. Used by `ansible/roles/kubernetes/templates/cloudflare-updater.yaml` to be passed to the cloudflare updater pod.
+8. LONGHORN_USERNAME - any username you want to use for basic auth http for longhorn. Used by `ansible/roles/longhorn/templates/longhorn-ingress.yaml`. Basic auth created by `bin/longhorn-basic-auth.sh`
+9. LONGHORN_PASSWORD - any password you want to use for basic auth http for longhorn. Used by `ansible/roles/longhorn/templates/longhorn-ingress.yaml`. Basic auth created by `bin/longhorn-basic-auth.sh`
 
 Then run `source test.env`
 
